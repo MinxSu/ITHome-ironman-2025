@@ -1,5 +1,5 @@
-import json
 import random
+
 from bedrock_service import BedrockService 
 
 def lambda_handler(event, context):
