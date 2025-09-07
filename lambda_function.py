@@ -3,6 +3,7 @@ import random
 from bedrock_service import BedrockService 
 
 def lambda_handler(event, context):
+    print("測試程式更新。")
     cards = []
     while len(cards) < 3:
         card = draw_card()
