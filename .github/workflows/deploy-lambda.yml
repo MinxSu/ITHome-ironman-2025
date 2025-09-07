@@ -24,7 +24,6 @@ jobs:
 
       - name: Zip Lambda function
         run: |
-          cd lambda
           zip -r ../function.zip .
 
       - name: Deploy to Lambda
