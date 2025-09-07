@@ -24,7 +24,7 @@ jobs:
 
       - name: Zip Lambda function
         run: |
-          zip -r ../function.zip .
+          zip -r function.zip .
       
       - name: List files after zip
         run: ls -R
