@@ -11,7 +11,7 @@ def lambda_handler(event, context):
         card = draw_card(shuffled)
         if not card in cards:
             cards.append((card, position()))
-        return cards
+    return cards
     #　bedrock = BedrockService()
     # response = bedrock.tarot_reading()
 
