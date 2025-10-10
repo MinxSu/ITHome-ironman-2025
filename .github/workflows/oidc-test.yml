@@ -1,7 +1,7 @@
 name: OIDC Test
 
 on:
-  workflow_dispatch:   # 這代表可以手動觸發測試
+  workflow_dispatch:   # 這代表手動觸發測試
 
 jobs:
   aws-test:
