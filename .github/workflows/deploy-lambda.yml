@@ -13,6 +13,12 @@ on:
   push:
     branches:
       - develop             # 僅當推送到 develop 分支時觸發部署流程
+    paths:
+      - 'lambda_function.py'
+      - 'bedrock_service.py'
+      - 's3_service.py'
+      - 'cards.py'
+      - 'deck.py'
 
 jobs:
   deploy:                   # Job 名稱，可自訂（例如 deploy、build 等）
