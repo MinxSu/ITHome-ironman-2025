@@ -1,1 +1,8 @@
 # 測試會不會觸發自動佈署
+```
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.lambdaignore'
+      - '.github/**'
+```
