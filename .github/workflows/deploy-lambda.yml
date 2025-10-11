@@ -23,6 +23,12 @@ jobs:
       contents: read   # 允許讀取 Repository 內容
 
     steps:
+      # Step 0. 輸出參數設定
+      - name: deploy infos
+        run: |
+          echo "Deploying to Lambda: ${{ secrets.LAMBDA_FUNCTION_NAME }}"
+          echo "Region: ${{ secrets.AWS_REGION }}"
+
       # Step 1. 取出最新的原始碼
       - name: Checkout source
         uses: actions/checkout@v4   # 官方 action，用來抓取專案內容到 Runner
