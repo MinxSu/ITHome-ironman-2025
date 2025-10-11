@@ -8,7 +8,6 @@ from bedrock_service import BedrockService
 
 bucket = "ithome-ironman-2025"
 key = "tarot.json"
-test="測試檔案篩選"
 
 def lambda_handler(event, context):
 
