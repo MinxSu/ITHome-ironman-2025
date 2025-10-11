@@ -37,8 +37,7 @@ jobs:
       # Step 3. 打包 Lambda 原始碼
       - name: Zip Lambda function
         run: |
-          zip -r function.zip .      # 將目前資料夾內容壓縮成 function.zip
-                                    # （可之後改為：zip -r function.zip . -x@.lambdaignore）
+          zip -r function.zip . -x@.lambdaignore
 
       # Step 4. 確認壓縮結果
       - name: List files after zip
