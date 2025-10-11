@@ -1,34 +1,52 @@
-name: Deploy Lambda
+# ==========================================================
+# GitHub Actions workflow：自動部署 AWS Lambda
+# ----------------------------------------------------------
+# 當 develop 分支有 push 時，自動：
+#   1. 取得 OIDC 驗證登入 AWS
+#   2. 打包整個專案成 zip
+#   3. 更新指定的 Lambda 函數程式碼
+# ==========================================================
+
+name: Deploy Lambda         # 工作流程名稱，會顯示在 Actions 頁面上
 
 on:
   push:
     branches:
-      -  develop  # 當推到指定分支時觸發部署
+      - develop             # 僅當推送到 develop 分支時觸發部署流程
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  deploy:                   # Job 名稱，可自訂（例如 deploy、build 等）
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu Runner 執行環境
+
     permissions:
-      id-token: write
-      contents: read
+      id-token: write  # 允許 Actions 產生 OIDC token 以登入 AWS
+      contents: read   # 允許讀取 Repository 內容
 
     steps:
+      # Step 1. 取出最新的原始碼
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4   # 官方 action，用來抓取專案內容到 Runner
 
+      # Step 2. 使用 OIDC 登入 AWS
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4  # AWS 官方 action
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}   # 要 Assume 的 IAM Role
+          aws-region: ${{ secrets.AWS_REGION }}         # 目標 AWS 區域
 
+      # Step 3. 打包 Lambda 原始碼
       - name: Zip Lambda function
         run: |
-          zip -r function.zip .
-      
-      - name: List files after zip
-        run: ls -R
+          zip -r function.zip .      # 將目前資料夾內容壓縮成 function.zip
+                                    # （可之後改為：zip -r function.zip . -x@.lambdaignore）
 
+      # Step 4. 確認壓縮結果
+      - name: List files after zip
+        run: ls -R                  # 列出所有檔案，確認 zip 包含的內容
+
+      # Step 5. 更新 Lambda 函數程式碼
+      # Lambda 函數名稱（從 Secrets 讀取）
+      # 指定上傳 zip 作為新版本程式碼
       - name: Deploy to Lambda
         run: |
           aws lambda update-function-code \
