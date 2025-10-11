@@ -24,10 +24,23 @@ jobs:
 
     steps:
       # Step 0. 輸出參數設定
-      - name: deploy infos
+      - name: check deploy infos
         run: |
-          echo "Deploying to Lambda: ${{ secrets.LAMBDA_FUNCTION_NAME }}"
-          echo "Region: ${{ secrets.AWS_REGION }}"
+          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
+            echo "AWS_ROLE_ARN is missing!"
+          else
+            echo "AWS_ROLE_ARN is set (value masked)."
+          fi
+          if [ -z "${{ secrets.AWS_REGION }}" ]; then
+            echo "AWS_REGION is missing!"
+          else
+            echo "AWS_REGION is set (value masked)."
+          fi
+          if [ -z "${{ secrets.LAMBDA_FUNCTION_NAME }}" ]; then
+            echo "LAMBDA_FUNCTION_NAME is missing!"
+          else
+            echo "LAMBDA_FUNCTION_NAME is set (value masked)."
+          fi
 
       # Step 1. 取出最新的原始碼
       - name: Checkout source
