@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     # 初始化
     s3_service  = S3Service()
     deckService = DeckService()
-    service = TarotService(s3_service, bucket, key)
+    service = TarotService(s3_service, bucket)
 
     # 取得完整的塔羅牌 ID 清單
     deck = tarot_deck.copy()
