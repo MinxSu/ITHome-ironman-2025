@@ -13,8 +13,8 @@ key = "tarot.json"
 def lambda_handler(event, context):
 
     # 接收 request
-    # event 會包含 HTTP 的資訊
-    body = json.loads(event["body"])
+    json_str = json.dumps(event)
+    body = json.loads(json_str)
     message = body.get("message")
 
     if message == "今日占卜":
