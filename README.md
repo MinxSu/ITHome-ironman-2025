@@ -11,5 +11,4 @@
   "question_type": "question-tarot",
   "message": "我近三個月適合換工作嗎？"
 }
-
 ```
