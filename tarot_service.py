@@ -24,8 +24,12 @@ class TarotService:
     def question_tarot(self, question, cards_info):
         # 建構 prompt
         prompt = f"""
-        請根據抽到的塔羅牌，幫我占卜：{question}
-        {cards_info}
+        請依照抽到的塔羅牌，根據「過去、現在、未來」的牌型，為我進行占卜。
+        問題：{question}
+        對應塔羅牌：
+          過去：{cards_info[0]}
+          現在：{cards_info[1]}
+          未來：{cards_info[2]}
         """
         # 呼叫 Bedrock
         return self.bedrock_service.tarot_reading(self.system_role, prompt)
