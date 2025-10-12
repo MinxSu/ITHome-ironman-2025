@@ -18,7 +18,7 @@ def lambda_handler(event, context):
     message = body.get("message")
 
     if message == "今日占卜":
-        service = DailyService()
+        service = DailyService(bucket, key)
         return service.daily_tarot()
    
     print(f"cards_info={cards_info}")

@@ -3,17 +3,17 @@ import json
 from bedrock_service import BedrockService
 from deck import DeckService
 from s3_service import S3Service
+from cards import tarot_deck
 
 class DailyService:
     
-    prompt_file_name = ""
-    def __init__(self, deck, bucket, key):
+    def __init__(self, bucket, key):
         # Service
         s3_service  = S3Service()
         self.deckService = DeckService()
         self.bedrock_service = BedrockService()
         # 塔羅牌
-        self.deck = deck
+        self.deck = tarot_deck.copy()
         info = s3_service.read_s3_file(bucket, key)
         self.tarot_by_id = {o['id']: o for o in json.loads(info)}
         # 系統提示
