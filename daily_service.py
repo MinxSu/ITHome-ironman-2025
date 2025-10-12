@@ -37,7 +37,7 @@ class DailyService:
     
     
     def __get_tarot_infos(self, cards):
-        card_info = []
+        cards_info = []
         for i in range(3):
             card_info = self.tarot_by_id.get(cards[i]['id'])
             card = {
@@ -52,5 +52,5 @@ class DailyService:
                 card['position'] = 'reversed'
                 card['keyword'] = card_info['reversed_meta']['keywords']
 
-            card_info.append(card)
-        return card_info
+            cards_info.append(card)
+        return cards_info
