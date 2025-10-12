@@ -25,9 +25,7 @@ class TarotService:
         # 建構 prompt
         prompt = f"""
         請根據抽到的塔羅牌，幫我占卜：{question}
-        愛情：{cards_info[0]}
-        事業：{cards_info[1]}
-        財運：{cards_info[2]}
+        {cards_info}
         """
         # 呼叫 Bedrock
-        return self.bedrock_service.daily_tarot_reading(self.system_role, prompt)
+        return self.bedrock_service.tarot_reading(self.system_role, prompt)
