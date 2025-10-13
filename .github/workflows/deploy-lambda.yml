@@ -61,7 +61,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 在 Amazon Linux 環境中安裝依賴
       # Step 3. 在 Amazon Linux 環境中安裝依賴
       - name: Install dependencies (Amazon Linux compatible)
         run: |
@@ -70,7 +69,7 @@ jobs:
             -w /var/task \
             --entrypoint /bin/bash \
             public.ecr.aws/lambda/python:3.12 \
-            -c "pip install -r requirements.txt -t . && rm -rf __pycache__ && find . -name '*.dist-info' -prune"
+            -c "pip install -r requirements.txt -t . && rm -rf __pycache__"
 
 
       # Step 4. 打包 Lambda 原始碼與依賴
