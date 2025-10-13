@@ -59,19 +59,19 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}   # 要 Assume 的 IAM Role
           aws-region: ${{ secrets.AWS_REGION }}         # 目標 AWS 區域
-          
-      # Step 3. 安裝依賴（使用 Amazon Linux 2 相容容器）
-      - name: Install dependencies in Amazon Linux 2
-        uses: docker://public.ecr.aws/lambda/python:3.11
-        with:
-          args: |
-            bash -c "
-              mkdir -p /tmp/build &&
-              cp -r . /tmp/build &&
-              cd /tmp/build &&
-              pip install -r requirements.txt --target . &&
-              zip -r /tmp/function.zip .
-            "
+
+      # Step 3. 在相容環境安裝依賴並打包
+      - name: Build Lambda package (Amazon Linux 2)
+        run: |
+          docker run --rm -v "$PWD":/var/task public.ecr.aws/sam/build-python3.11 \
+          /bin/bash -c "
+            mkdir -p /var/task/build &&
+            rsync -av --exclude build --exclude .git --exclude .github . /var/task/build/ &&
+            cd /var/task/build &&
+            pip install -r requirements.txt --target . &&
+            zip -r /var/task/function.zip . -x@../.lambdaignore
+          "
+
       - name: Copy zip to workspace
         run: |
           cp /tmp/function.zip function.zip
