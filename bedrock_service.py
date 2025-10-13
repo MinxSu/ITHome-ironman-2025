@@ -23,7 +23,7 @@ class BedrockService:
         system_role: 要提供給模型的角色設定
         prompt: 要輸入的提示詞
         """
-        model_id = 'arn:aws:bedrock:ap-northeast-1:590184072539:inference-profile/apac.anthropic.claude-3-7-sonnet-20250219-v1:0'
+        model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
         params = {
             "system": system_role,
             "anthropic_version": "bedrock-2023-05-31",
@@ -76,7 +76,7 @@ class BedrockService:
         呼叫 Bedrock 服務
         system_role: 要提供給模型的角色設定
         """
-        model_id = 'arn:aws:bedrock:ap-northeast-1:590184072539:inference-profile/apac.anthropic.claude-3-7-sonnet-20250219-v1:0'
+        model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
         params = {
             "system": system_role,
             "anthropic_version": "bedrock-2023-05-31",
