@@ -53,6 +53,22 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4   # 官方 action，用來抓取專案內容到 Runner
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          mkdir -p python/lib/python3.12/site-packages
+          pip install -r requirements.txt -t python/lib/python3.12/site-packages --platform manylinux2014_x86_64 --only-binary=:all:
+      
+      - name: Create Lambda Layer
+        run: |
+          cd python
+          zip -r ../lambda-layer.zip .
+          cd ..
+
       # Step 2. 使用 OIDC 登入 AWS
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4  # AWS 官方 action
@@ -60,37 +76,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}   # 要 Assume 的 IAM Role
           aws-region: ${{ secrets.AWS_REGION }}         # 目標 AWS 區域
 
-      # Step 3. 在相容環境安裝依賴並打包
-      - name: Build Lambda package (Amazon Linux 2)
+      # Step 3. 打包 Lambda 原始碼
+      - name: Zip Lambda function
         run: |
-          docker run --rm -v "$PWD":/var/task public.ecr.aws/sam/build-python3.11 \
-          /bin/bash -c "
-            mkdir -p /var/task/build &&
-            rsync -av --exclude build --exclude .git --exclude .github . /var/task/build/ &&
-            cd /var/task/build &&
-            pip install -r requirements.txt --target . &&
-            zip -r /var/task/function.zip . -x@../.lambdaignore
-          "
-
-
-
-      # # Step 3. 安裝依賴
-      # - name: Install dependencies
-      #   run: |
-      #     mkdir build
-      #     rsync -av --exclude build --exclude .git --exclude .github . build/
-      #     pip install -r requirements.txt --target build/
-
-      # # Step 4. 打包 Lambda 原始碼
-      # - name: Zip Lambda function
-      #   run: |
-      #     cd build
-      #     zip -r ../function.zip . -x@../.lambdaignore
-
-      # # Step 3. 打包 Lambda 原始碼
-      # - name: Zip Lambda function
-      #   run: |
-      #     zip -r function.zip . -x@.lambdaignore
+          zip -r function.zip . -x@.lambdaignore
 
       # Step 5. 確認壓縮結果
       - name: List files after zip
