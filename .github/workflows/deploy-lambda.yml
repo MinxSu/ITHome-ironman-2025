@@ -79,7 +79,7 @@ jobs:
             -w /var/task \
             --entrypoint /bin/bash \
             public.ecr.aws/lambda/python:3.13 \
-            -c "rm -rf anthropic* && pip install --force-reinstall -r requirements.txt -t . && rm -rf __pycache__"
+            -c "rm -rf ./anthropic && pip install --force-reinstall -r requirements.txt -t . && rm -rf __pycache__"
 
 
       # Step 4. 打包 Lambda 原始碼與依賴
