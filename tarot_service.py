@@ -1,10 +1,12 @@
+from anthropic_service import AnthropicService
 from bedrock_service import BedrockService
 
 class TarotService:
     
     def __init__(self, s3_service, bucket):
         # Service
-        self.bedrock_service = BedrockService()
+        # self.service = BedrockService()
+        self.service = AnthropicService()
         # 系統提示(daily)
         self.daily_system_role = s3_service.read_s3_file(bucket, "daily_prompt.txt")
         # 系統提示(提問占卜)
@@ -19,7 +21,7 @@ class TarotService:
         財運：{cards_info[2]}
         """
         # 呼叫 Bedrock
-        return self.bedrock_service.daily_tarot_reading(self.daily_system_role, prompt)
+        return self.service.daily_tarot_reading(self.daily_system_role, prompt)
     
     def question_tarot(self, question, cards_info):
         # 建構 prompt
@@ -32,4 +34,4 @@ class TarotService:
           未來：{cards_info[2]}
         """
         # 呼叫 Bedrock
-        return self.bedrock_service.tarot_reading(self.system_role, prompt)
+        return self.service.tarot_reading(self.system_role, prompt)

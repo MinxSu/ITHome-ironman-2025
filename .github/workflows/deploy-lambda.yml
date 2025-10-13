@@ -60,16 +60,29 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}   # 要 Assume 的 IAM Role
           aws-region: ${{ secrets.AWS_REGION }}         # 目標 AWS 區域
 
-      # Step 3. 打包 Lambda 原始碼
+      # Step 3. 安裝依賴
+      - name: Install dependencies
+        run: |
+          mkdir build
+          cp -r . build/
+          pip install -r requirements.txt --target build/
+
+      # Step 4. 打包 Lambda 原始碼
       - name: Zip Lambda function
         run: |
-          zip -r function.zip . -x@.lambdaignore
+          cd build
+          zip -r ../function.zip . -x@../.lambdaignore
 
-      # Step 4. 確認壓縮結果
+      # # Step 3. 打包 Lambda 原始碼
+      # - name: Zip Lambda function
+      #   run: |
+      #     zip -r function.zip . -x@.lambdaignore
+
+      # Step 5. 確認壓縮結果
       - name: List files after zip
         run: ls -R                  # 列出所有檔案，確認 zip 包含的內容
 
-      # Step 5. 更新 Lambda 函數程式碼
+      # Step 6. 更新 Lambda 函數程式碼
       # Lambda 函數名稱（從 Secrets 讀取）
       # 指定上傳 zip 作為新版本程式碼
       - name: Deploy to Lambda
@@ -77,3 +90,16 @@ jobs:
           aws lambda update-function-code \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
             --zip-file fileb://function.zip
+
+      # Step 7. 等待 Lambda 更新完成
+      - name: Wait for Lambda update
+        run: |
+          aws lambda wait function-updated \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
+      # Step 8. 更新環境變數
+      - name: Update Lambda environment variables
+        run: |
+          aws lambda update-function-configuration \
+            --function-name tarot-lambda \
+            --environment "Variables={ANTHROPIC_KEY=${{ secrets.ANTHROPIC_KEY }}}"
