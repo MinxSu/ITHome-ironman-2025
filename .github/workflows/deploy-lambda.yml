@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: |
           mkdir build
-          cp -r . build/
+          rsync -av --exclude build --exclude .git --exclude .github . build/
           pip install -r requirements.txt --target build/
 
       # Step 4. 打包 Lambda 原始碼
