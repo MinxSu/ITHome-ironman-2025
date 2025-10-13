@@ -62,10 +62,16 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       # 在 Amazon Linux 環境中安裝依賴
+      # Step 3. 在 Amazon Linux 環境中安裝依賴
       - name: Install dependencies (Amazon Linux compatible)
         run: |
-          docker run --rm -v "$PWD":/var/task -w /var/task public.ecr.aws/lambda/python:3.12 \
-            /bin/bash -c "pip install -r requirements.txt -t . && rm -rf __pycache__ && find . -name '*.dist-info' -prune"
+          docker run --rm \
+            -v "$PWD":/var/task \
+            -w /var/task \
+            --entrypoint /bin/bash \
+            public.ecr.aws/lambda/python:3.12 \
+            -c "pip install -r requirements.txt -t . && rm -rf __pycache__ && find . -name '*.dist-info' -prune"
+
 
       # Step 4. 打包 Lambda 原始碼與依賴
       - name: Package Lambda function
