@@ -30,7 +30,7 @@ class BedrockService:
         }
 
         response = self.client.invoke_model(
-            modelId="arn:aws:bedrock:ap-northeast-1:590184072539:inference-profile/apac.anthropic.claude-3-7-sonnet-20250219-v1:0",
+            modelId='anthropic.claude-3-5-sonnet-20241022-v2:0',
             body=json.dumps(body)
         )
 
@@ -55,7 +55,7 @@ class BedrockService:
         }
 
         response = self.client.invoke_model(
-            modelId="arn:aws:bedrock:ap-northeast-1:590184072539:inference-profile/apac.anthropic.claude-3-7-sonnet-20250219-v1:0",
+            modelId='anthropic.claude-3-5-sonnet-20241022-v2:0',
             body=json.dumps(body)
         )
 
