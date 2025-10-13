@@ -61,17 +61,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 3. 安裝 Python 版本與依賴
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
+      # 在 Amazon Linux 環境中安裝依賴
+      - name: Install dependencies (Amazon Linux compatible)
         run: |
-          mkdir -p python
-          pip install -r requirements.txt --target ./python
-          echo "Installed dependencies to ./python"
+          docker run --rm -v "$PWD":/var/task -w /var/task public.ecr.aws/lambda/python:3.12 \
+            /bin/bash -c "pip install -r requirements.txt -t . && rm -rf __pycache__ && find . -name '*.dist-info' -prune"
 
       # Step 4. 打包 Lambda 原始碼與依賴
       - name: Package Lambda function
