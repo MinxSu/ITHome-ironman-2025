@@ -101,5 +101,5 @@ jobs:
       - name: Update Lambda environment variables
         run: |
           aws lambda update-function-configuration \
-            --function-name tarot-lambda \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
             --environment "Variables={ANTHROPIC_KEY=${{ secrets.ANTHROPIC_KEY }}}"
