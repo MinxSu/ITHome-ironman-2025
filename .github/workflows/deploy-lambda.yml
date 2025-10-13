@@ -68,15 +68,14 @@ jobs:
             -v "$PWD":/var/task \
             -w /var/task \
             --entrypoint /bin/bash \
-            public.ecr.aws/lambda/python:3.12 \
+            public.ecr.aws/lambda/python:3.13 \
             -c "pip install -r requirements.txt -t . && rm -rf __pycache__"
-
 
       # Step 4. 打包 Lambda 原始碼與依賴
       - name: Package Lambda function
         run: |
           zip -r function.zip . -x@.lambdaignore
-      
+
       # Step 5. 確認打包內容
       - name: List files after zip
         run: unzip -l function.zip | head -n 50
