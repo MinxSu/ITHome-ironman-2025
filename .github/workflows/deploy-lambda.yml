@@ -75,10 +75,8 @@ jobs:
       # Step 4. 打包 Lambda 原始碼與依賴
       - name: Package Lambda function
         run: |
-          # 將主程式與依賴一起打包
           zip -r function.zip . -x@.lambdaignore
-          cd python && zip -r ../function.zip . && cd ..
-
+      
       # Step 5. 確認打包內容
       - name: List files after zip
         run: unzip -l function.zip | head -n 50
