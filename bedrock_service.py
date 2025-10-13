@@ -1,14 +1,6 @@
 import boto3
 import json
 import time
-import logging
-
-# ===== Logger 設定 =====
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 
 class BedrockService:
@@ -42,8 +34,9 @@ class BedrockService:
             "temperature": 0.7
         }
 
-        logger.info(f"[Bedrock] Start daily tarot reading")
-        logger.info(f"Model: {model_id}, max_tokens={params['max_tokens']}, temperature={params['temperature']}")
+        print("\n[Bedrock] === Start daily tarot reading ===")
+        print(f"Model: {model_id}")
+        print(f"max_tokens={params['max_tokens']}, temperature={params['temperature']}")
 
         start_all = time.time()
 
@@ -56,8 +49,8 @@ class BedrockService:
         try:
             response = self.client.invoke_model(modelId=model_id, body=body)
         except Exception as e:
-            logger.exception("[Bedrock] invoke_model failed:")
-            raise e
+            print("[Bedrock] invoke_model failed:", str(e))
+            raise
         t3 = time.time()
 
         # Step 3: 處理回傳結果
@@ -67,12 +60,12 @@ class BedrockService:
         result = output['content'][0]['text']
         elapsed_total = round(t4 - start_all, 2)
 
-        # ===== Log 詳細時間 =====
-        logger.info(f"[Bedrock] Prepare body: {round(t2 - t1, 2)}s")
-        logger.info(f"[Bedrock] Invoke API:   {round(t3 - t2, 2)}s")
-        logger.info(f"[Bedrock] Parse JSON:  {round(t4 - t3, 2)}s")
-        logger.info(f"[Bedrock] Total time:  {elapsed_total}s")
-        logger.info(f"[Bedrock] Response length: {len(result)} chars")
+        # ===== 印出詳細時間 =====
+        print(f"[Bedrock] Prepare body: {round(t2 - t1, 2)}s")
+        print(f"[Bedrock] Invoke API:   {round(t3 - t2, 2)}s")
+        print(f"[Bedrock] Parse JSON:  {round(t4 - t3, 2)}s")
+        print(f"[Bedrock] Total time:  {elapsed_total}s")
+        print(f"[Bedrock] Response length: {len(result)} chars\n")
 
         return result
 
@@ -94,8 +87,9 @@ class BedrockService:
             "temperature": 0.7
         }
 
-        logger.info(f"[Bedrock] Start tarot reading")
-        logger.info(f"Model: {model_id}, max_tokens={params['max_tokens']}, temperature={params['temperature']}")
+        print("\n[Bedrock] === Start tarot reading ===")
+        print(f"Model: {model_id}")
+        print(f"max_tokens={params['max_tokens']}, temperature={params['temperature']}")
 
         start_all = time.time()
 
@@ -108,8 +102,8 @@ class BedrockService:
         try:
             response = self.client.invoke_model(modelId=model_id, body=body)
         except Exception as e:
-            logger.exception("[Bedrock] invoke_model failed:")
-            raise e
+            print("[Bedrock] invoke_model failed:", str(e))
+            raise
         t3 = time.time()
 
         # Step 3: 處理回傳結果
@@ -119,11 +113,11 @@ class BedrockService:
         result = output['content'][0]['text']
         elapsed_total = round(t4 - start_all, 2)
 
-        # ===== Log 詳細時間 =====
-        logger.info(f"[Bedrock] Prepare body: {round(t2 - t1, 2)}s")
-        logger.info(f"[Bedrock] Invoke API:   {round(t3 - t2, 2)}s")
-        logger.info(f"[Bedrock] Parse JSON:  {round(t4 - t3, 2)}s")
-        logger.info(f"[Bedrock] Total time:  {elapsed_total}s")
-        logger.info(f"[Bedrock] Response length: {len(result)} chars")
+        # ===== 印出詳細時間 =====
+        print(f"[Bedrock] Prepare body: {round(t2 - t1, 2)}s")
+        print(f"[Bedrock] Invoke API:   {round(t3 - t2, 2)}s")
+        print(f"[Bedrock] Parse JSON:  {round(t4 - t3, 2)}s")
+        print(f"[Bedrock] Total time:  {elapsed_total}s")
+        print(f"[Bedrock] Response length: {len(result)} chars\n")
 
         return result
