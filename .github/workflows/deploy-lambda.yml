@@ -1,93 +1,82 @@
 # ==========================================================
-# GitHub Actions workflow：自動部署 AWS Lambda
+# GitHub Actions workflow：自動部署 AWS Lambda（含依賴安裝）
 # ----------------------------------------------------------
 # 當 develop 分支有 push 時，自動：
 #   1. 取得 OIDC 驗證登入 AWS
-#   2. 打包整個專案成 zip
-#   3. 更新指定的 Lambda 函數程式碼
+#   2. 安裝 requirements.txt 依賴
+#   3. 打包整個專案成 zip（包含依賴）
+#   4. 更新指定的 Lambda 函數程式碼
 # ==========================================================
 
-name: Deploy Lambda         # 工作流程名稱，會顯示在 Actions 頁面上
+name: Deploy Lambda
 
 on:
   push:
     branches:
-      - develop             # 僅當推送到 develop 分支時觸發部署流程
+      - develop
     paths-ignore:
       - 'README.md'
       - '.gitignore'
       - '.lambdaignore'
       - '.github/**'
 
-  workflow_dispatch:         # 允許手動執行
+  workflow_dispatch:
 
 jobs:
-  deploy:                   # Job 名稱，可自訂（例如 deploy、build 等）
-    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu Runner 執行環境
+  deploy:
+    runs-on: ubuntu-latest
 
     permissions:
-      id-token: write  # 允許 Actions 產生 OIDC token 以登入 AWS
-      contents: read   # 允許讀取 Repository 內容
+      id-token: write
+      contents: read
 
     steps:
       # Step 0. 輸出參數設定
-      - name: check deploy infos
+      - name: Check deploy infos
         run: |
-          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
-            echo "AWS_ROLE_ARN is missing!"
-          else
-            echo "AWS_ROLE_ARN is set (value masked)."
-          fi
-          if [ -z "${{ secrets.AWS_REGION }}" ]; then
-            echo "AWS_REGION is missing!"
-          else
-            echo "AWS_REGION is set (value masked)."
-          fi
-          if [ -z "${{ secrets.LAMBDA_FUNCTION_NAME }}" ]; then
-            echo "LAMBDA_FUNCTION_NAME is missing!"
-          else
-            echo "LAMBDA_FUNCTION_NAME is set (value masked)."
-          fi
+          for var in AWS_ROLE_ARN AWS_REGION LAMBDA_FUNCTION_NAME; do
+            if [ -z "${{ secrets[$var] }}" ]; then
+              echo "$var is missing!"
+            else
+              echo "$var is set (value masked)."
+            fi
+          done
 
-      # Step 1. 取出最新的原始碼
+      # Step 1. 抓取原始碼
       - name: Checkout source
-        uses: actions/checkout@v4   # 官方 action，用來抓取專案內容到 Runner
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-      
-      - name: Install dependencies
-        run: |
-          mkdir -p python/lib/python3.12/site-packages
-          pip install -r requirements.txt -t python/lib/python3.12/site-packages --platform manylinux2014_x86_64 --only-binary=:all:
-      
-      - name: Create Lambda Layer
-        run: |
-          cd python
-          zip -r ../lambda-layer.zip .
-          cd ..
+        uses: actions/checkout@v4
 
       # Step 2. 使用 OIDC 登入 AWS
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4  # AWS 官方 action
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}   # 要 Assume 的 IAM Role
-          aws-region: ${{ secrets.AWS_REGION }}         # 目標 AWS 區域
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 3. 打包 Lambda 原始碼
-      - name: Zip Lambda function
+      # Step 3. 安裝 Python 版本與依賴
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
         run: |
-          zip -r function.zip . -x@.lambdaignore
+          mkdir -p python
+          pip install -r requirements.txt --target ./python
+          echo "Installed dependencies to ./python"
 
-      # Step 5. 確認壓縮結果
+      # Step 4. 打包 Lambda 原始碼與依賴
+      - name: Package Lambda function
+        run: |
+          # 將主程式與依賴一起打包
+          zip -r function.zip . -x@.lambdaignore
+          cd python && zip -r ../function.zip . && cd ..
+
+      # Step 5. 確認打包內容
       - name: List files after zip
-        run: ls -R # 列出所有檔案，確認 zip 包含的內容
+        run: unzip -l function.zip | head -n 50
 
       # Step 6. 更新 Lambda 函數程式碼
-      # Lambda 函數名稱（從 Secrets 讀取）
-      # 指定上傳 zip 作為新版本程式碼
       - name: Deploy to Lambda
         run: |
           aws lambda update-function-code \
@@ -100,7 +89,7 @@ jobs:
           aws lambda wait function-updated \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
 
-      # Step 8. 更新環境變數
+      # Step 8. 更新環境變數（選用）
       - name: Update Lambda environment variables
         run: |
           aws lambda update-function-configuration \

@@ -1,5 +1,5 @@
 from anthropic_service import AnthropicService
-from bedrock_service import BedrockService
+# from bedrock_service import BedrockService
 
 class TarotService:
     
