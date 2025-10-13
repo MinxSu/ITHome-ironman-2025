@@ -34,13 +34,21 @@ jobs:
       # Step 0. 輸出參數設定
       - name: Check deploy infos
         run: |
-          for var in AWS_ROLE_ARN AWS_REGION LAMBDA_FUNCTION_NAME; do
-            if [ -z "${{ secrets[$var] }}" ]; then
-              echo "$var is missing!"
-            else
-              echo "$var is set (value masked)."
-            fi
-          done
+          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
+            echo "AWS_ROLE_ARN is missing!"
+          else
+            echo "AWS_ROLE_ARN is set (value masked)."
+          fi
+          if [ -z "${{ secrets.AWS_REGION }}" ]; then
+            echo "AWS_REGION is missing!"
+          else
+            echo "AWS_REGION is set (value masked)."
+          fi
+          if [ -z "${{ secrets.LAMBDA_FUNCTION_NAME }}" ]; then
+            echo "LAMBDA_FUNCTION_NAME is missing!"
+          else
+            echo "LAMBDA_FUNCTION_NAME is set (value masked)."
+          fi
 
       # Step 1. 抓取原始碼
       - name: Checkout source
