@@ -72,9 +72,7 @@ jobs:
             zip -r /var/task/function.zip . -x@../.lambdaignore
           "
 
-      - name: Copy zip to workspace
-        run: |
-          cp /tmp/function.zip function.zip
+
 
       # # Step 3. 安裝依賴
       # - name: Install dependencies
@@ -96,7 +94,7 @@ jobs:
 
       # Step 5. 確認壓縮結果
       - name: List files after zip
-        run: ls -R                  # 列出所有檔案，確認 zip 包含的內容
+        run: ls -R # 列出所有檔案，確認 zip 包含的內容
 
       # Step 6. 更新 Lambda 函數程式碼
       # Lambda 函數名稱（從 Secrets 讀取）
