@@ -1,5 +1,7 @@
 import anthropic
 import os
+import time
+import json
 
 class AnthropicService:
     
@@ -14,38 +16,85 @@ class AnthropicService:
     def daily_tarot_reading(self, system_role, prompt):
         return self.__daily_tarot(system_role, prompt)
     
+
     def __daily_tarot(self, system_role, prompt):
         """
-        呼叫 Bedrock 服務進行每日占卜
+        呼叫AI服務進行每日占卜
         system_role: 要提供給模型的角色設定
         prompt: 要輸入的提示詞
         """
+        print("[Bedrock] === Start daily tarot reading ===")
+        print(f"Model: claude-3-7-sonnet-latest")
+        print(f"max_tokens=1200, temperature=0.7")
 
-        message = self.client.messages.create(
-            system = system_role,
-            model="claude-3-7-sonnet-latest",
-            max_tokens=1200,
-            temperature=0.7,
-            messages=[
+        t_start = time.perf_counter()
+        t_prep = time.perf_counter()
+
+        body = {
+            "system": system_role,
+            "model": "claude-3-7-sonnet-latest",
+            "max_tokens": 1200,
+            "temperature": 0.7,
+            "messages": [
                 {"role": "user", "content": [{"type": "text", "text": prompt}]}
             ]
-        )
-        return message.content[0].text
+        }
+
+        t_before_invoke = time.perf_counter()
+        print(f"[Bedrock] Prepare body: {t_before_invoke - t_prep:.2f}s")
+
+        # === 呼叫 API ===
+        message = self.client.messages.create(**body)
+
+        t_after_invoke = time.perf_counter()
+        print(f"[Bedrock] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
+
+        # === 處理回傳結果 ===
+        result = message.content[0].text
+        t_end = time.perf_counter()
+
+        print(f"[Bedrock] Parse JSON:  {t_end - t_after_invoke:.2f}s")
+        print(f"[Bedrock] Total time:  {t_end - t_start:.2f}s")
+        print(f"[Bedrock] Response length: {len(result)} chars")
+
+        return result
 
 
     def __tarot_reading(self, system_role, prompt):
         """
-        呼叫 Bedrock 服務
+        呼叫AI服務
         system_role: 要提供給模型的角色設定
         """
+        print("[Bedrock] === Start tarot reading ===")
+        print(f"Model: claude-3-7-sonnet-latest")
+        print(f"max_tokens=2000, temperature=0.7")
 
-        message = self.client.messages.create(
-            system = system_role,
-            model="claude-3-7-sonnet-latest",
-            max_tokens=2000,
-            temperature=0.7,
-            messages=[
+        t_start = time.perf_counter()
+        t_prep = time.perf_counter()
+
+        body = {
+            "system": system_role,
+            "model": "claude-3-7-sonnet-latest",
+            "max_tokens": 2000,
+            "temperature": 0.7,
+            "messages": [
                 {"role": "user", "content": [{"type": "text", "text": prompt}]}
             ]
-        )
-        return message.content[0].text
+        }
+
+        t_before_invoke = time.perf_counter()
+        print(f"[Bedrock] Prepare body: {t_before_invoke - t_prep:.2f}s")
+
+        message = self.client.messages.create(**body)
+
+        t_after_invoke = time.perf_counter()
+        print(f"[Bedrock] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
+
+        result = message.content[0].text
+        t_end = time.perf_counter()
+
+        print(f"[Bedrock] Parse JSON:  {t_end - t_after_invoke:.2f}s")
+        print(f"[Bedrock] Total time:  {t_end - t_start:.2f}s")
+        print(f"[Bedrock] Response length: {len(result)} chars")
+
+        return result
