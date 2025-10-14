@@ -1,7 +1,6 @@
 import anthropic
 import os
 import time
-import json
 
 class AnthropicService:
     
@@ -25,6 +24,48 @@ class AnthropicService:
         """
         print("[Bedrock] === Start daily tarot reading ===")
         print(f"Model: claude-3-7-sonnet-latest")
+        print(f"max_tokens=800, temperature=0.7")
+
+        t_start = time.perf_counter()
+        t_prep = time.perf_counter()
+
+        body = {
+            "system": system_role,
+            "model": "claude-3-7-sonnet-latest",
+            "max_tokens": 800,
+            "temperature": 0.7,
+            "messages": [
+                {"role": "user", "content": [{"type": "text", "text": prompt}]}
+            ]
+        }
+
+        t_before_invoke = time.perf_counter()
+        print(f"[Anthropic] Prepare body: {t_before_invoke - t_prep:.2f}s")
+
+        # === 呼叫 API ===
+        message = self.client.messages.create(**body)
+
+        t_after_invoke = time.perf_counter()
+        print(f"[Anthropic] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
+
+        # === 處理回傳結果 ===
+        result = message.content[0].text
+        t_end = time.perf_counter()
+
+        print(f"[Anthropic] Parse JSON:  {t_end - t_after_invoke:.2f}s")
+        print(f"[Anthropic] Total time:  {t_end - t_start:.2f}s")
+        print(f"[Anthropic] Response length: {len(result)} chars")
+
+        return result
+
+
+    def __tarot_reading(self, system_role, prompt):
+        """
+        呼叫AI服務
+        system_role: 要提供給模型的角色設定
+        """
+        print("[Anthropic] === Start tarot reading ===")
+        print(f"Model: claude-3-7-sonnet-latest")
         print(f"max_tokens=1200, temperature=0.7")
 
         t_start = time.perf_counter()
@@ -41,60 +82,18 @@ class AnthropicService:
         }
 
         t_before_invoke = time.perf_counter()
-        print(f"[Bedrock] Prepare body: {t_before_invoke - t_prep:.2f}s")
-
-        # === 呼叫 API ===
-        message = self.client.messages.create(**body)
-
-        t_after_invoke = time.perf_counter()
-        print(f"[Bedrock] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
-
-        # === 處理回傳結果 ===
-        result = message.content[0].text
-        t_end = time.perf_counter()
-
-        print(f"[Bedrock] Parse JSON:  {t_end - t_after_invoke:.2f}s")
-        print(f"[Bedrock] Total time:  {t_end - t_start:.2f}s")
-        print(f"[Bedrock] Response length: {len(result)} chars")
-
-        return result
-
-
-    def __tarot_reading(self, system_role, prompt):
-        """
-        呼叫AI服務
-        system_role: 要提供給模型的角色設定
-        """
-        print("[Bedrock] === Start tarot reading ===")
-        print(f"Model: claude-3-7-sonnet-latest")
-        print(f"max_tokens=2000, temperature=0.7")
-
-        t_start = time.perf_counter()
-        t_prep = time.perf_counter()
-
-        body = {
-            "system": system_role,
-            "model": "claude-3-7-sonnet-latest",
-            "max_tokens": 2000,
-            "temperature": 0.7,
-            "messages": [
-                {"role": "user", "content": [{"type": "text", "text": prompt}]}
-            ]
-        }
-
-        t_before_invoke = time.perf_counter()
-        print(f"[Bedrock] Prepare body: {t_before_invoke - t_prep:.2f}s")
+        print(f"[Anthropic] Prepare body: {t_before_invoke - t_prep:.2f}s")
 
         message = self.client.messages.create(**body)
 
         t_after_invoke = time.perf_counter()
-        print(f"[Bedrock] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
+        print(f"[Anthropic] Invoke API:   {t_after_invoke - t_before_invoke:.2f}s")
 
         result = message.content[0].text
         t_end = time.perf_counter()
 
-        print(f"[Bedrock] Parse JSON:  {t_end - t_after_invoke:.2f}s")
-        print(f"[Bedrock] Total time:  {t_end - t_start:.2f}s")
-        print(f"[Bedrock] Response length: {len(result)} chars")
+        print(f"[Anthropic] Parse JSON:  {t_end - t_after_invoke:.2f}s")
+        print(f"[Anthropic] Total time:  {t_end - t_start:.2f}s")
+        print(f"[Anthropic] Response length: {len(result)} chars")
 
         return result
