@@ -23,7 +23,7 @@ class AnthropicService:
 
         message = self.client.messages.create(
             system = system_role,
-            model="claude-3-5-sonnet-latest",
+            model="claude-3-7-sonnet-latest",
             max_tokens=1200,
             temperature=0.7,
             messages=[
@@ -41,7 +41,7 @@ class AnthropicService:
 
         message = self.client.messages.create(
             system = system_role,
-            model="claude-3-5-sonnet-latest",
+            model="claude-3-7-sonnet-latest",
             max_tokens=2000,
             temperature=0.7,
             messages=[
