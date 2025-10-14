@@ -18,7 +18,6 @@ class TarotService:
         事業：{cards_info[1]}
         財運：{cards_info[2]}
         """
-        # 呼叫 Bedrock
         return self.service.daily_tarot_reading(self.daily_system_role, prompt)
     
     def question_tarot(self, question, cards_info):
@@ -31,5 +30,4 @@ class TarotService:
           現在：{cards_info[1]}
           未來：{cards_info[2]}
         """
-        # 呼叫 Bedrock
         return self.service.tarot_reading(self.system_role, prompt)
