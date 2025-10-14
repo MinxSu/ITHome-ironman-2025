@@ -4,9 +4,8 @@ import os
 class AnthropicService:
     
     def __init__(self):
-        api_key = os.environ["ANTHROPIC_KEY"]
         self.client = anthropic.Anthropic(
-            api_key=api_key
+            api_key=os.environ["ANTHROPIC_KEY"]
         )
 
     def tarot_reading(self, system_role, prompt):
