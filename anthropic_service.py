@@ -2,6 +2,9 @@ import anthropic
 import os
 import time
 
+model_id = "claude-3-7-sonnet-latest"
+# model_id = "claude-3-5-haiku-latest"
+
 class AnthropicService:
     
     def __init__(self):
@@ -22,8 +25,8 @@ class AnthropicService:
         system_role: 要提供給模型的角色設定
         prompt: 要輸入的提示詞
         """
-        print("[Bedrock] === Start daily tarot reading ===")
-        print(f"Model: claude-3-7-sonnet-latest")
+        print("[Anthropic] === Start daily tarot reading ===")
+        print(f"Model: {model_id}")
         print(f"max_tokens=800, temperature=0.7")
 
         t_start = time.perf_counter()
@@ -31,7 +34,7 @@ class AnthropicService:
 
         body = {
             "system": system_role,
-            "model": "claude-3-7-sonnet-latest",
+            "model": model_id,
             "max_tokens": 800,
             "temperature": 0.7,
             "messages": [
@@ -65,7 +68,7 @@ class AnthropicService:
         system_role: 要提供給模型的角色設定
         """
         print("[Anthropic] === Start tarot reading ===")
-        print(f"Model: claude-3-7-sonnet-latest")
+        print(f"Model: {model_id}")
         print(f"max_tokens=1200, temperature=0.7")
 
         t_start = time.perf_counter()
@@ -73,7 +76,7 @@ class AnthropicService:
 
         body = {
             "system": system_role,
-            "model": "claude-3-7-sonnet-latest",
+            "model": model_id,
             "max_tokens": 1200,
             "temperature": 0.7,
             "messages": [
