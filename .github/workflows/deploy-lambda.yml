@@ -63,12 +63,16 @@ jobs:
       # Step 3. 在 Amazon Linux 環境中安裝依賴
       - name: Install dependencies (Amazon Linux compatible)
         run: |
+          # 清理舊的依賴
+          rm -rf anthropic httpx certifi h11 sniffio anyio idna
+          
+          # 使用 Amazon Linux 容器安裝
           docker run --rm \
             -v "$PWD":/var/task \
             -w /var/task \
             --entrypoint /bin/bash \
             public.ecr.aws/lambda/python:3.13 \
-            -c "rm -rf ./anthropic && pip install --force-reinstall -r requirements.txt -t . && rm -rf __pycache__"
+            -c "pip install --no-cache-dir -r requirements.txt -t . && find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true"
 
       # Step 4. 打包 Lambda 原始碼與依賴
       - name: Package Lambda function
